@@ -68,7 +68,17 @@ public class UserService {
     	if(user.getPassword()!=null) {
     		user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
     	}
-    	user.setRoles(userData.getRoles());
+        Set<Role> roles = new HashSet<>();
+        for (String roleName : userDetails.getRoles()) {
+            Optional<Role> roleOpt = roleRepository.findByName(roleName);
+            Role role = roleOpt.orElseGet(() -> {
+                Role newRole = new Role();
+                newRole.setName(roleName);
+                return roleRepository.save(newRole);
+            });
+            roles.add(role);
+        }
+    	user.setRoles(roles);
     	User updatedUser= userRepository.save(user);
         return modelMapper.map(updatedUser, UserDTO.class);
     }
