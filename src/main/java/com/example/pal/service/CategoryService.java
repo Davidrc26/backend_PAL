@@ -22,9 +22,9 @@ public class CategoryService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
+    public CategoryDTO createCategory(String name) {
         Category newCategory = new Category();
-        newCategory.setName(categoryDTO.getName());
+        newCategory.setName(name);
         return modelMapper.map(categoryRepository.save(newCategory), CategoryDTO.class);
     }
 

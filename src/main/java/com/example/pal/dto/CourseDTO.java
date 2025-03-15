@@ -1,6 +1,8 @@
 package com.example.pal.dto;
 
 
+import java.util.Set;
+
 import lombok.Data;
 
 @Data
@@ -9,6 +11,7 @@ public class CourseDTO {
     private String title;
     private String description;
     private double price;
-    //private Set<ContentDTO> contents;
-
+    private UserDTO instructor;
+    private CategoryDTO category;
+    private Set<ContentDTO> contents;
 }

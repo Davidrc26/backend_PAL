@@ -1,10 +1,14 @@
 package com.example.pal.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.pal.dto.ContentDTO;
+import com.example.pal.dto.CreateContentDTO;
 import com.example.pal.model.Content;
 import com.example.pal.model.Course;
 import com.example.pal.repository.ContentRepository;
@@ -18,34 +22,48 @@ public class ContentService {
     @Autowired
     private CourseRepository courseRepository;
 
-    public Content createContent(String type, String file_url, long course_id) {
-        Course course = courseRepository.findById(course_id).orElseThrow(() -> new RuntimeException("Course not found!"));
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public Content createContent(CreateContentDTO contentDTO) {
+        Course course = courseRepository.findById(contentDTO.getCourseId())
+                .orElseThrow(() -> new RuntimeException("Course not found!"));
 
         Content newContent = new Content();
-        newContent.setType(type);
-        newContent.setFile_url(file_url);
+        newContent.setType(contentDTO.getType());
+        newContent.setFile_url(contentDTO.getFile_url());
         newContent.setCourse(course);
 
         return contentRepository.save(newContent);
     }
 
-    public List<Content> getAllContents() {
-        return contentRepository.findAll();
+    public List<ContentDTO> getAllContents() {
+        return contentRepository.findAll().stream().map(content -> modelMapper.map(content, ContentDTO.class)).collect(Collectors.toList());   
     }
 
-    public Content getContentById(Long id) {
-        return contentRepository.findById(id).orElseThrow(() -> new RuntimeException("Content not found!"));
+    public ContentDTO getContentById(Long id) {
+        Content content = contentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Content not found!"));
+        return modelMapper.map(content, ContentDTO.class);
     }
 
-    public Content updateContent(Long id, Content contentDetails) {
-        Content content = contentRepository.findById(id).orElseThrow(() -> new RuntimeException("Content not found!"));
-        content.setType(contentDetails.getType());
-        content.setFile_url(contentDetails.getFile_url());
-        return contentRepository.save(content);
+    public ContentDTO updateContent(Long id, CreateContentDTO contentDTO) {
+        Content content = contentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Content not found!"));
+
+        Course course = courseRepository.findById(contentDTO.getCourseId())
+                .orElseThrow(() -> new RuntimeException("Course not found!"));
+
+        content.setType(contentDTO.getType());
+        content.setFile_url(contentDTO.getFile_url());
+        content.setCourse(course);
+
+        return modelMapper.map(contentRepository.save(content), ContentDTO.class); 
     }
 
     public void deleteContent(Long id) {
-        contentRepository.deleteById(id);
+        Content content = contentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Content not found!"));
+        contentRepository.delete(content);
     }
-
 }

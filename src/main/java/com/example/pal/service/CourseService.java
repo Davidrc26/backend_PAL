@@ -1,10 +1,14 @@
 package com.example.pal.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.pal.dto.CourseDTO;
+import com.example.pal.dto.CreateCourseDTO;
 import com.example.pal.model.Category;
 import com.example.pal.model.Course;
 import com.example.pal.model.User;
@@ -14,7 +18,7 @@ import com.example.pal.repository.UserRepository;
 
 @Service
 public class CourseService {
-     @Autowired
+    @Autowired
     private CourseRepository courseRepository;
 
     @Autowired
@@ -23,37 +27,45 @@ public class CourseService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public Course createCourse(String title, String description, double price, long category_id, long instructor_id) {
-        User instructor = userRepository.findById(instructor_id).orElseThrow(() -> new RuntimeException("Instructor not found"));
-        Category category = categoryRepository.findById(category_id).orElseThrow(() -> new RuntimeException("Category not found"));
-        Course newCourse = new Course();
-        newCourse.setTitle(title);
-        newCourse.setDescription(description);
-        newCourse.setPrice(price);
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public CourseDTO createCourse(CreateCourseDTO courseDTO) {
+        User instructor = userRepository.findById(courseDTO.getInstructorId()).orElseThrow(() -> new RuntimeException("Instructor not found"));
+        Category category = categoryRepository.findById(courseDTO.getCategoryId()).orElseThrow(() -> new RuntimeException("Category not found"));
+        Course newCourse = modelMapper.map(courseDTO, Course.class);
         newCourse.setCategory(category);
         newCourse.setInstructor(instructor);
-        return courseRepository.save(newCourse);  
+        Course savedCourse = courseRepository.save(newCourse);
+        return modelMapper.map(savedCourse, CourseDTO.class);
     }
 
-
-    public List<Course> getAllCourses() {
-        return courseRepository.findAll();
+    public List<CourseDTO> getAllCourses() {
+        return courseRepository.findAll().stream()
+                .map(course -> modelMapper.map(course, CourseDTO.class))
+                .collect(Collectors.toList());
     }
 
-    public Course getCourseById(Long id) {
-        return courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found!"));
-    }
-
-    public Course updateCourse(Long id, Course courseDetails) {
+    public CourseDTO getCourseById(Long id) {
         Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found!"));
-        course.setTitle(courseDetails.getTitle());
-        course.setDescription(courseDetails.getDescription());
-        course.setPrice(courseDetails.getPrice());
-        return courseRepository.save(course);
+        return modelMapper.map(course, CourseDTO.class);
+    }
+
+    //¿Como vamos a actualizar los contenidos de un curso?
+    public CourseDTO updateCourse(Long id, CreateCourseDTO courseDTO) {
+        Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found!"));
+        course.setTitle(courseDTO.getTitle());
+        course.setDescription(courseDTO.getDescription());
+        course.setPrice(courseDTO.getPrice());
+        User instructor = userRepository.findById(courseDTO.getInstructorId()).orElseThrow(() -> new RuntimeException("Instructor not found"));
+        Category category = categoryRepository.findById(courseDTO.getCategoryId()).orElseThrow(() -> new RuntimeException("Category not found"));
+        course.setCategory(category);
+        course.setInstructor(instructor);
+        Course updatedCourse = courseRepository.save(course);
+        return modelMapper.map(updatedCourse, CourseDTO.class);
     }
 
     public void deleteCourse(Long id) {
         courseRepository.deleteById(id);
     }
-    
 }

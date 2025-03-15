@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.pal.dto.CategoryDTO;
 import com.example.pal.service.CategoryService;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,8 +27,8 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @PostMapping("/create")
-    public ResponseEntity<CategoryDTO> postMethodName(@RequestBody CategoryDTO categoryDTO) {
-        CategoryDTO categoryDto = categoryService.createCategory(categoryDTO);
+    public ResponseEntity<CategoryDTO> postMethodName(@RequestBody String name) {
+        CategoryDTO categoryDto = categoryService.createCategory(name);
         return ResponseEntity.status(201).body(categoryDto);
     }
 
@@ -48,7 +49,7 @@ public class CategoryController {
     	return ResponseEntity.ok(updatedCategory);
     }
 
-    @PutMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id){
     	categoryService.deleteCategory(id);
     	return ResponseEntity.noContent().build();
