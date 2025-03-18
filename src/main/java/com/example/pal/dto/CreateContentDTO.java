@@ -6,5 +6,5 @@ import lombok.Data;
 public class CreateContentDTO {
     private String file_url;
     private String type;
-    private Long courseId;
+    private Long course;
 }

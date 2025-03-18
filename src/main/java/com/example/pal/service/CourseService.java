@@ -31,8 +31,8 @@ public class CourseService {
     private ModelMapper modelMapper;
 
     public CourseDTO createCourse(CreateCourseDTO courseDTO) {
-        User instructor = userRepository.findById(courseDTO.getInstructorId()).orElseThrow(() -> new RuntimeException("Instructor not found"));
-        Category category = categoryRepository.findById(courseDTO.getCategoryId()).orElseThrow(() -> new RuntimeException("Category not found"));
+        User instructor = userRepository.findById(courseDTO.getInstructor()).orElseThrow(() -> new RuntimeException("Instructor not found"));
+        Category category = categoryRepository.findById(courseDTO.getCategory()).orElseThrow(() -> new RuntimeException("Category not found"));
         Course newCourse = modelMapper.map(courseDTO, Course.class);
         newCourse.setCategory(category);
         newCourse.setInstructor(instructor);
@@ -57,8 +57,8 @@ public class CourseService {
         course.setTitle(courseDTO.getTitle());
         course.setDescription(courseDTO.getDescription());
         course.setPrice(courseDTO.getPrice());
-        User instructor = userRepository.findById(courseDTO.getInstructorId()).orElseThrow(() -> new RuntimeException("Instructor not found"));
-        Category category = categoryRepository.findById(courseDTO.getCategoryId()).orElseThrow(() -> new RuntimeException("Category not found"));
+        User instructor = userRepository.findById(courseDTO.getInstructor()).orElseThrow(() -> new RuntimeException("Instructor not found"));
+        Category category = categoryRepository.findById(courseDTO.getCategory()).orElseThrow(() -> new RuntimeException("Category not found"));
         course.setCategory(category);
         course.setInstructor(instructor);
         Course updatedCourse = courseRepository.save(course);

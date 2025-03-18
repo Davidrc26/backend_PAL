@@ -17,13 +17,13 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<CourseDTO> createCourse(@RequestBody CreateCourseDTO courseDTO) {
         CourseDTO newCourse = courseService.createCourse(courseDTO);
         return ResponseEntity.ok(newCourse);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<CourseDTO>> getAllCourses() {
         List<CourseDTO> courses = courseService.getAllCourses();
         return ResponseEntity.ok(courses);
@@ -35,13 +35,13 @@ public class CourseController {
         return ResponseEntity.ok(course);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<CourseDTO> updateCourse(@PathVariable Long id, @RequestBody CreateCourseDTO courseDTO) {
         CourseDTO updatedCourse = courseService.updateCourse(id, courseDTO);
         return ResponseEntity.ok(updatedCourse);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
         return ResponseEntity.noContent().build();

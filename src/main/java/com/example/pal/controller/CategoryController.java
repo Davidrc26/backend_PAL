@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.pal.dto.CategoryDTO;
+import com.example.pal.dto.CreateCategoryDTO;
 import com.example.pal.service.CategoryService;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,8 +28,8 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @PostMapping("/create")
-    public ResponseEntity<CategoryDTO> postMethodName(@RequestBody String name) {
-        CategoryDTO categoryDto = categoryService.createCategory(name);
+    public ResponseEntity<CategoryDTO> postMethodName(@RequestBody CreateCategoryDTO CategoryDTO) {
+        CategoryDTO categoryDto = categoryService.createCategory(CategoryDTO.getName());
         return ResponseEntity.status(201).body(categoryDto);
     }
 

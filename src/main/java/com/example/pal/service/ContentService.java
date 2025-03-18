@@ -25,8 +25,8 @@ public class ContentService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public Content createContent(CreateContentDTO contentDTO) {
-        Course course = courseRepository.findById(contentDTO.getCourseId())
+    public ContentDTO createContent(CreateContentDTO contentDTO) {
+        Course course = courseRepository.findById(contentDTO.getCourse())
                 .orElseThrow(() -> new RuntimeException("Course not found!"));
 
         Content newContent = new Content();
@@ -34,7 +34,7 @@ public class ContentService {
         newContent.setFile_url(contentDTO.getFile_url());
         newContent.setCourse(course);
 
-        return contentRepository.save(newContent);
+        return modelMapper.map(contentRepository.save(newContent), ContentDTO.class); 
     }
 
     public List<ContentDTO> getAllContents() {
@@ -51,7 +51,7 @@ public class ContentService {
         Content content = contentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Content not found!"));
 
-        Course course = courseRepository.findById(contentDTO.getCourseId())
+        Course course = courseRepository.findById(contentDTO.getCourse())
                 .orElseThrow(() -> new RuntimeException("Course not found!"));
 
         content.setType(contentDTO.getType());

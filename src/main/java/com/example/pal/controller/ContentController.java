@@ -18,13 +18,13 @@ public class ContentController {
     @Autowired
     private ContentService contentService;
 
-    @PostMapping
-    public ResponseEntity<Content> createContent(@RequestBody CreateContentDTO contentDTO) {
-        Content newContent = contentService.createContent(contentDTO);
+    @PostMapping("/create")
+    public ResponseEntity<ContentDTO> createContent(@RequestBody CreateContentDTO contentDTO) {
+        ContentDTO newContent = contentService.createContent(contentDTO);
         return ResponseEntity.ok(newContent);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<ContentDTO>> getAllContents() {
         List<ContentDTO> contents = contentService.getAllContents();
         return ResponseEntity.ok(contents);
@@ -36,13 +36,13 @@ public class ContentController {
         return ResponseEntity.ok(content);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<ContentDTO> updateContent(@PathVariable Long id, @RequestBody CreateContentDTO contentDTO) {
         ContentDTO updatedContent = contentService.updateContent(id, contentDTO);
         return ResponseEntity.ok(updatedContent);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteContent(@PathVariable Long id) {
         contentService.deleteContent(id);
         return ResponseEntity.noContent().build();
