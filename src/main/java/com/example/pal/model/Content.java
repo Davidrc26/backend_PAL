@@ -1,5 +1,10 @@
 package com.example.pal.model;
 
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,5 +29,19 @@ public class Content {
     private String type;
 
     @ManyToOne
+    @JsonIgnore
     private Course course;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Content content = (Content) o;
+        return Objects.equals(id, content.id); 
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); 
+    }
 }

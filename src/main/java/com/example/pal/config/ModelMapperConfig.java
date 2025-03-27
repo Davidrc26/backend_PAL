@@ -11,8 +11,6 @@ public class ModelMapperConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        modelMapper.getConfiguration().setPropertyCondition(context -> !(context.getSource() instanceof org.hibernate.collection.spi.PersistentSet));
         return modelMapper;
     }
 }
