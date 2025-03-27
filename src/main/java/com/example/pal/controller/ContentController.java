@@ -2,17 +2,14 @@ package com.example.pal.controller;
 
 import com.example.pal.dto.ContentDTO;
 import com.example.pal.dto.CreateContentDTO;
-import com.example.pal.model.Content;
 import com.example.pal.service.ContentService;
 
-import org.apache.tomcat.util.file.ConfigurationSource.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,13 +42,13 @@ public class ContentController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<ContentDTO> updateContent(@PathVariable Long id, @ModelAttribute CreateContentDTO contentDTO) {
+    public ResponseEntity<ContentDTO> updateContent(@PathVariable("id") Long id, @ModelAttribute CreateContentDTO contentDTO) {
         ContentDTO updatedContent = contentService.updateContent(id, contentDTO);
         return ResponseEntity.ok(updatedContent);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteContent(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteContent(@PathVariable("id") Long id) {
         contentService.deleteContent(id);
         return ResponseEntity.noContent().build();
     }
