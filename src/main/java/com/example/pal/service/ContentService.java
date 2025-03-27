@@ -1,11 +1,15 @@
 package com.example.pal.service;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.pal.dto.ContentDTO;
 import com.example.pal.dto.CreateContentDTO;
@@ -23,6 +27,9 @@ public class ContentService {
     private CourseRepository courseRepository;
 
     @Autowired
+    private FilesService filesService;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     public ContentDTO createContent(CreateContentDTO contentDTO) {
@@ -30,8 +37,9 @@ public class ContentService {
                 .orElseThrow(() -> new RuntimeException("Course not found!"));
 
         Content newContent = new Content();
+        
         newContent.setType(contentDTO.getType());
-        newContent.setFile_url(contentDTO.getFile_url());
+        newContent.setFile_url(filesService.uploadFile(contentDTO.getFile_url()));
         newContent.setCourse(course);
 
         return modelMapper.map(contentRepository.save(newContent), ContentDTO.class); 
@@ -55,7 +63,8 @@ public class ContentService {
                 .orElseThrow(() -> new RuntimeException("Course not found!"));
 
         content.setType(contentDTO.getType());
-        content.setFile_url(contentDTO.getFile_url());
+        filesService.deleteFile(content.getFile_url());
+        content.setFile_url(filesService.uploadFile(contentDTO.getFile_url()));
         content.setCourse(course);
 
         return modelMapper.map(contentRepository.save(content), ContentDTO.class); 
