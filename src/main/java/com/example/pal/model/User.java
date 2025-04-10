@@ -14,7 +14,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+
+
 
 @Data
 @Entity
@@ -30,7 +35,9 @@ public class User {
 
     @Column(nullable = false)
     private String password;
-
+    
+    @NotNull(message="El usuario debe tener al menos un rol")
+    @Size(min=1,message="El usuario debe tener al menos un rol")
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "user_roles",

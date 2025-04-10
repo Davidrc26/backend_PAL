@@ -74,4 +74,11 @@ public class ContentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    //Get contents by course title
+    @GetMapping("/by-course-title/{courseTitle}")
+    public ResponseEntity<List<ContentDTO>> getContentsByCourseTitle(@PathVariable("courseTitle") String courseTitle) {
+        List<ContentDTO> contents = contentService.getContentsByCourseTitle(courseTitle);
+        return ResponseEntity.ok(contents);
+    }
 }

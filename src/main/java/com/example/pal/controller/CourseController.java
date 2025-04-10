@@ -46,4 +46,18 @@ public class CourseController {
         courseService.deleteCourse(id);
         return ResponseEntity.noContent().build();
     }
+
+    //Busqueda de cursos gratuitos
+    @GetMapping("/free")
+    public ResponseEntity<List<CourseDTO>> getFreeCourses() {
+        List<CourseDTO> freeCourses = courseService.getFreeCourses();
+        return ResponseEntity.ok(freeCourses);
+    }
+
+    //Busqueda de cursos por categoria
+    @GetMapping("/by-category/{category}")
+    public ResponseEntity<List<CourseDTO>> getCoursesByCategory(@PathVariable("category") String category) {
+        List<CourseDTO> courses = courseService.getCoursesByCategory(category);
+        return ResponseEntity.ok(courses);
+    }
 }

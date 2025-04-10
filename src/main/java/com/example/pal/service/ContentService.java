@@ -71,4 +71,10 @@ public class ContentService {
                 .orElseThrow(() -> new RuntimeException("Content not found!"));
         contentRepository.delete(content);
     }
+
+    //Get contents by course title
+    public List<ContentDTO> getContentsByCourseTitle(String courseTitle) {
+        List<Content> contents = contentRepository.findContentsByCourseTitle(courseTitle);
+        return contents.stream().map(content -> modelMapper.map(content, ContentDTO.class)).collect(Collectors.toList());
+    }
 }

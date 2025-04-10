@@ -11,5 +11,7 @@ import com.example.pal.model.Category;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
         Optional<Category> findById(long id);
-        Category findByName(String name);
+
+        Optional<Category> findByName(String name);
+
 }
