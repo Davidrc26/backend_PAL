@@ -24,6 +24,14 @@ public class CategoryService {
 
     public CategoryDTO createCategory(String name) {
         Category newCategory = new Category();
+
+        //Buscar si existe una categoría con el mismo nombre
+        Optional<Category> existingCategory = categoryRepository.findByName(name);
+        if (existingCategory != null) {
+            // Si existe no se puede crear una nueva categoría
+            throw new RuntimeException("La categoría ya existe");
+        }
+        // Si no existe, crear una nueva categoría
         newCategory.setName(name);
         return modelMapper.map(categoryRepository.save(newCategory), CategoryDTO.class);
     }
@@ -48,4 +56,9 @@ public class CategoryService {
         categoryRepository.deleteById(id);
     }
 
+    public Optional<CategoryDTO> getCategoryByName(String name) {
+        return categoryRepository.findByName(name).map(category -> modelMapper.map(category, CategoryDTO.class));
+    }
+
+    
 }

@@ -33,6 +33,13 @@ public class CourseService {
     public CourseDTO createCourse(CreateCourseDTO courseDTO) {
         User instructor = userRepository.findById(courseDTO.getInstructor()).orElseThrow(() -> new RuntimeException("Instructor not found"));
         Category category = categoryRepository.findById(courseDTO.getCategory()).orElseThrow(() -> new RuntimeException("Category not found"));
+        
+        Course existingCourse = courseRepository.findByTitle(courseDTO.getTitle()).orElse(null);
+        if (existingCourse != null) {
+            // Si existe un curso con el mismo título, no se puede crear uno nuevo
+            throw new RuntimeException("Ya existe un curso con ese nombre");
+        }
+
         Course newCourse = modelMapper.map(courseDTO, Course.class);
         newCourse.setCategory(category);
         newCourse.setInstructor(instructor);
@@ -67,5 +74,20 @@ public class CourseService {
 
     public void deleteCourse(Long id) {
         courseRepository.deleteById(id);
+    }
+
+    //Get all free courses
+    public List<CourseDTO> getFreeCourses() {
+        return courseRepository.findByPrice(0).stream()
+                .map(course -> modelMapper.map(course, CourseDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    //Get all courses by category.name
+    public List<CourseDTO> getCoursesByCategory(String categoryName) {
+        Category category = categoryRepository.findByName(categoryName).orElseThrow(() -> new RuntimeException("Category not found"));
+        return courseRepository.findByCategory(category.getName()).stream()
+                .map(course -> modelMapper.map(course, CourseDTO.class))
+                .collect(Collectors.toList());
     }
 }
