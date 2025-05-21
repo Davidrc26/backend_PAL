@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.pal.model.Enrollment;
 
-public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
+public interface EnrollmentRepository extends JpaRepository<Enrollment, Enrollment.EnrollmentId> {
        // Custom query to find enrollment by user ID and course ID (llave compuesta)
     @Query("SELECT e FROM Enrollment e WHERE e.user.id = :userId AND e.course.id = :courseId")
     Optional<Enrollment> findByUserIdAndCourseId(@Param("userId") Long userId, @Param("courseId") Long courseId);
