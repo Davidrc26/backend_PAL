@@ -14,4 +14,5 @@ public class CourseDTO {
     private UserDTO instructor;
     private CategoryDTO category;
     private Set<ContentDTO> contents;
+    private Set<ExamDTO> exams;
 }
