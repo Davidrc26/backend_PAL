@@ -36,6 +36,15 @@ public class Course {
     @Column(nullable = false)
     private double price;
 
+    @Column(nullable = false)
+    private double averageRating = 0.0;
+
+    @Column(nullable = false)
+    private String difficulty;
+
+    @Column(nullable = false, updatable = false)
+    private java.time.LocalDateTime createdAt = java.time.LocalDateTime.now();
+
     @ManyToOne
     private User instructor;
 
@@ -45,5 +54,7 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<Content> contents;
+
+    
     
 }
