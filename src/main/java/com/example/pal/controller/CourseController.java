@@ -60,4 +60,18 @@ public class CourseController {
         List<CourseDTO> courses = courseService.getCoursesByCategory(category);
         return ResponseEntity.ok(courses);
     }
+
+    //Busqueda de cursos por palabra clave
+    @GetMapping("/search")
+    public ResponseEntity<List<CourseDTO>> searchCourses(
+        @RequestParam("q") String keyword,
+        @RequestParam(value = "free", required = false) Boolean free,
+        @RequestParam(value = "difficulty", required = false) String difficulty,
+        @RequestParam(value = "minRating", required = false) Double minRating,
+        @RequestParam(value = "orderBy", required = false, defaultValue = "relevance") String orderBy
+        ) {
+    List<CourseDTO> results = courseService.searchCourses(keyword, free, difficulty, minRating, orderBy);
+    // List<CourseDTO> results = courseService.searchCourses(keyword);
+    return ResponseEntity.ok(results);
+}
 }

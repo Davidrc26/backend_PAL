@@ -90,4 +90,47 @@ public class CourseService {
                 .map(course -> modelMapper.map(course, CourseDTO.class))
                 .collect(Collectors.toList());
     }
+
+    //Get all courses by title, description or category
+    // public List<CourseDTO> searchCourses(String keyword) {
+    // List<Course> courses = courseRepository.searchCoursesByKeyword(keyword);
+    // return courses.stream()
+    //     .map(course -> modelMapper.map(course, CourseDTO.class))
+    //     .collect(Collectors.toList());
+    // }
+
+    
+    public List<CourseDTO> searchCourses(String keyword, Boolean free, String difficulty, Double minRating, String orderBy) {
+        List<Course> courses = courseRepository.searchCoursesByKeyword(keyword);
+
+        if (free != null) {
+            if (free) {
+                courses = courses.stream().filter(c -> c.getPrice() == 0).collect(Collectors.toList());
+            } else {
+                courses = courses.stream().filter(c -> c.getPrice() > 0).collect(Collectors.toList());
+            }
+        }
+
+        if (difficulty != null && !difficulty.isEmpty()) {
+            courses = courses.stream()
+                .filter(c -> c.getDifficulty() != null && c.getDifficulty().equalsIgnoreCase(difficulty))
+                .collect(Collectors.toList());
+        }
+
+        if (minRating != null) {
+            courses = courses.stream()
+                .filter(c -> c.getAverageRating() >= minRating)
+                .collect(Collectors.toList());
+        }
+
+        if ("date".equalsIgnoreCase(orderBy)) {
+            courses.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
+        }
+
+        return courses.stream()
+            .map(course -> modelMapper.map(course, CourseDTO.class))
+            .collect(Collectors.toList());
+    }
+
+
 }
