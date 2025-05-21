@@ -13,7 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
@@ -31,7 +31,7 @@ public class Course {
     @Column(nullable = false)
     private String description;
 
-    @NotBlank(message = "El precio no puede estar vacío") 
+    @NotNull(message = "El campo no puede estar vacío")
     @PositiveOrZero(message = "El valor debe ser positivo o cero") 
     @Column(nullable = false)
     private double price;
