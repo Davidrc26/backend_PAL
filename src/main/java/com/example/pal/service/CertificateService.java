@@ -1,6 +1,7 @@
 package com.example.pal.service;
 
 import com.example.pal.dto.CertificateDTO;
+import com.example.pal.enums.StateEnum;
 import com.example.pal.model.Certificate;
 import com.example.pal.model.Course;
 import com.example.pal.model.User;
@@ -8,6 +9,7 @@ import com.example.pal.model.Exam;
 import com.example.pal.model.ExamSubmission;
 import com.example.pal.repository.CertificateRepository;
 import com.example.pal.repository.CourseRepository;
+import com.example.pal.repository.EnrollmentRepository;
 import com.example.pal.repository.UserRepository;
 import com.example.pal.repository.ExamSubmissionRepository;
 import com.example.pal.repository.ExamRepository;
@@ -17,12 +19,11 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.time.LocalDateTime;
 import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
 
 @Service
 public class CertificateService {
@@ -34,14 +35,12 @@ public class CertificateService {
     @Autowired
     private CourseRepository courseRepository;
     @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
     private ExamSubmissionRepository examSubmissionRepository;
     @Autowired
     private ExamRepository examRepository;
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
 
-    // Aquí deberás validar que el usuario haya aprobado todos los exámenes del
-    // curso
     public File generateCertificate(Long courseId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -66,6 +65,12 @@ public class CertificateService {
                 throw new RuntimeException("El usuario no ha aprobado el examen: " + exam.getTitle());
             }
         }
+
+        // Cambiar el estado del enrollment a COMPLETED
+        enrollmentRepository.findByUserIdAndCourseId(userId, courseId).ifPresent(enrollment -> {
+            enrollment.setState(StateEnum.COMPLETED);
+            enrollmentRepository.save(enrollment);
+        });
 
         Certificate certificate = new Certificate();
         certificate.setUser(user);
@@ -101,9 +106,9 @@ public class CertificateService {
             // Logo (ajusta la ruta a tu logo real si lo deseas)
             // String logoPath = "src/main/resources/static/logo.png";
             // if (new File(logoPath).exists()) {
-            // Image logo = Image.getInstance(logoPath);
-            // logo.scaleToFit(100, 100);
-            // document.add(logo);
+            //     Image logo = Image.getInstance(logoPath);
+            //     logo.scaleToFit(100, 100);
+            //     document.add(logo);
             // }
 
             document.add(new Paragraph("Certificado de Finalización"));
@@ -117,5 +122,10 @@ public class CertificateService {
             throw new RuntimeException("Error al generar el PDF del certificado", e);
         }
         return file;
+    }
+
+    public Certificate getCertificate(Long certificateId) {
+        return certificateRepository.findById(certificateId)
+                .orElseThrow(() -> new RuntimeException("Certificate not found"));
     }
 }

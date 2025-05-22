@@ -17,6 +17,7 @@ import com.example.pal.model.Course;
 import com.example.pal.model.Exam;
 import com.example.pal.model.Question;
 import com.example.pal.repository.CourseRepository;
+import com.example.pal.repository.EnrollmentRepository;
 import com.example.pal.repository.ExamRepository;
 import com.example.pal.dto.ExamSubmissionDTO;
 import com.example.pal.model.ExamSubmission;
@@ -43,6 +44,9 @@ public class ExamService {
 
     @Autowired
     private UserRepository UserRepository;
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
 
     public ExamDTO createExam(CreateExamDTO examDTO) {
         Course course = courseRepository.findById(examDTO.getCourse()).orElseThrow(() -> new RuntimeException("Course not found"));
@@ -115,6 +119,30 @@ public class ExamService {
         submit.setAnswers(studentAnswers);
         submit.setScore(score);
         examSubmissionRepository.save(submit);
+
+        // --- LÓGICA PARA CAMBIAR EL ESTADO DEL ENROLLMENT ---
+        List<Exam> exams = examRepository.findAll().stream()
+            .filter(e -> e.getCourse().getId().equals(exam.getCourse().getId()))
+            .toList();
+
+        boolean allPassed = true;
+        for (Exam ex : exams) {
+            ExamSubmission submission = examSubmissionRepository.findByUserIdAndExamId(user.getId(), ex.getId())
+                .orElse(null);
+            if (submission == null || submission.getScore() < 60) {
+                allPassed = false;
+                break;
+            }
+        }
+
+        if (allPassed) {
+            enrollmentRepository.findByUserIdAndCourseId(user.getId(), exam.getCourse().getId()).ifPresent(enrollment -> {
+                enrollment.setState(com.example.pal.enums.StateEnum.COMPLETED);
+                enrollmentRepository.save(enrollment);
+            });
+        }
+
+        // --- FIN LÓGICA ---
         
         return score;
     }
