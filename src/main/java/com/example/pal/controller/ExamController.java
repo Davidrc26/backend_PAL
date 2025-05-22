@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.pal.dto.CreateExamDTO;
 import com.example.pal.dto.ExamDTO;
+import com.example.pal.dto.ExamResultDTO;
 import com.example.pal.service.ExamService;
+import com.example.pal.dto.ExamSubmissionDTO;
 
 
 @RestController
@@ -49,5 +51,20 @@ public class ExamController {
         examService.deleteExam(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/submit/{id}")
+    public ResponseEntity<Double> submitExam(@PathVariable("id") Long id, @RequestBody ExamSubmissionDTO submitExamDTO) {
+        Double score = examService.submitExam(id, submitExamDTO);
+        //responde con el score del examen
+        return ResponseEntity.ok(score);
+    }
+
+    @GetMapping("/results/{examId}")
+        public ResponseEntity<ExamResultDTO> getExamResults(@PathVariable Long examId,@RequestParam Long id) {
+            ExamResultDTO result = examService.getExamResultForStudent(examId, id);
+            return ResponseEntity.ok(result);
+        }
+
+
     
 }
