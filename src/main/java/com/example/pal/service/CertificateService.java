@@ -12,14 +12,17 @@ import com.example.pal.repository.UserRepository;
 import com.example.pal.repository.ExamSubmissionRepository;
 import com.example.pal.repository.ExamRepository;
 
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.PdfWriter;
+
+import java.io.File;
+import java.io.IOException;
+
 import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-
-
-
 
 @Service
 public class CertificateService {
@@ -37,31 +40,32 @@ public class CertificateService {
     @Autowired
     private ExamRepository examRepository;
 
-
-    // Aquí deberás validar que el usuario haya aprobado todos los exámenes del curso
-    public CertificateDTO generateCertificate(Long courseId, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
+    // Aquí deberás validar que el usuario haya aprobado todos los exámenes del
+    // curso
+    public File generateCertificate(Long courseId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
 
         // Obtener todos los exámenes del curso
         List<Exam> exams = examRepository.findAll().stream()
-            .filter(e -> e.getCourse().getId().equals(courseId))
-            .toList();
+                .filter(e -> e.getCourse().getId().equals(courseId))
+                .toList();
 
         if (exams.isEmpty()) {
-            
             throw new RuntimeException("El curso no tiene exámenes asociados");
         }
 
         // Validar que el usuario haya aprobado todos los exámenes
         for (Exam exam : exams) {
             ExamSubmission result = examSubmissionRepository.findByUserIdAndExamId(userId, exam.getId())
-                .orElseThrow(() -> new RuntimeException("El usuario no ha presentado el examen: " + exam.getTitle()));
-            if (result.getScore() < 60) { // Puedes ajustar el puntaje mínimo
+                    .orElseThrow(
+                            () -> new RuntimeException("El usuario no ha presentado el examen: " + exam.getTitle()));
+            if (result.getScore() < 60) {
                 throw new RuntimeException("El usuario no ha aprobado el examen: " + exam.getTitle());
             }
         }
-        
 
         Certificate certificate = new Certificate();
         certificate.setUser(user);
@@ -70,11 +74,48 @@ public class CertificateService {
         certificate.setPdfPath("certificates/certificate_" + user.getId() + "_" + course.getId() + ".pdf");
 
         Certificate saved = certificateRepository.save(certificate);
-        return modelMapper.map(saved, CertificateDTO.class);
+
+        // Generar el PDF del certificado
+        File file = generateCertificatePdf(saved);
+
+        CertificateDTO dto = new CertificateDTO();
+        dto.setId(saved.getId());
+        dto.setStudentName(user.getUsername()); // O user.getNombre() si tienes ese campo
+        dto.setCourseTitle(course.getTitle());
+        dto.setIssuedAt(saved.getIssuedAt());
+        dto.setPdfUrl(saved.getPdfPath());
+
+        return file;
     }
 
-    // Método para obtener el certificado y devolver el PDF
-    public Certificate getCertificate(Long certificateId) {
-        return certificateRepository.findById(certificateId).orElseThrow(() -> new RuntimeException("Certificate not found"));
+    private File generateCertificatePdf(Certificate certificate) {
+        String pdfPath = certificate.getPdfPath();
+        File file = new File(pdfPath);
+        file.getParentFile().mkdirs(); // Crea la carpeta si no existe
+
+        Document document = new Document();
+        try {
+            PdfWriter.getInstance(document, new java.io.FileOutputStream(pdfPath));
+            document.open();
+
+            // Logo (ajusta la ruta a tu logo real si lo deseas)
+            // String logoPath = "src/main/resources/static/logo.png";
+            // if (new File(logoPath).exists()) {
+            // Image logo = Image.getInstance(logoPath);
+            // logo.scaleToFit(100, 100);
+            // document.add(logo);
+            // }
+
+            document.add(new Paragraph("Certificado de Finalización"));
+            document.add(new Paragraph("Otorgado a: " + certificate.getUser().getUsername()));
+            document.add(new Paragraph("Por completar el curso: " + certificate.getCourse().getTitle()));
+            document.add(new Paragraph("Fecha de emisión: " + certificate.getIssuedAt().toLocalDate().toString()));
+            document.add(new Paragraph("Plataforma PAL"));
+
+            document.close();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al generar el PDF del certificado", e);
+        }
+        return file;
     }
 }
