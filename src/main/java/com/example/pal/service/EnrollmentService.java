@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.pal.dto.CreateEnrollmentDTO;
 import com.example.pal.dto.EnrollmentDTO;
+import com.example.pal.enums.StateEnum;
 import com.example.pal.model.Course;
 import com.example.pal.model.Enrollment;
 import com.example.pal.model.User;
@@ -52,6 +53,7 @@ public class EnrollmentService {
         Enrollment enrollment = new Enrollment();
         enrollment.setCourse(course);
         enrollment.setUser(user);
+        enrollment.setState(StateEnum.IN_PROGRESS);
         LocalDateTime now = LocalDateTime.now(ZoneId.of("America/Bogota"));
         enrollment.setEnrollment_date(now);
         return modelMapper.map(enrollmentRepository.save(enrollment), EnrollmentDTO.class);

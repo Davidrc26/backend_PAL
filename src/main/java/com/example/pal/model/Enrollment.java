@@ -5,6 +5,8 @@ import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.example.pal.enums.StateEnum;
+
 @Data
 @Entity
 @Table(name = "enrollments")
@@ -23,6 +25,9 @@ public class Enrollment {
 
     @Column(name = "enrollment_date", nullable = false)
     private LocalDateTime enrollment_date;
+
+    @Column(name = "state", nullable = false)
+    private StateEnum state;
 
     
     @Data
