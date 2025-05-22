@@ -43,6 +43,7 @@ public class CourseService {
         Course newCourse = modelMapper.map(courseDTO, Course.class);
         newCourse.setCategory(category);
         newCourse.setInstructor(instructor);
+        newCourse.setCreatedAt(java.time.LocalDateTime.now());
         Course savedCourse = courseRepository.save(newCourse);
         return modelMapper.map(savedCourse, CourseDTO.class);
     }
