@@ -1,6 +1,7 @@
 HELP.md
 .gradle
 uploads
+certificates
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -40,5 +41,3 @@ out/
 
 
 ### Folders ###
-
-.certificates/
