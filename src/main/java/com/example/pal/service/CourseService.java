@@ -91,13 +91,7 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
-    //Get all courses by title, description or category
-    // public List<CourseDTO> searchCourses(String keyword) {
-    // List<Course> courses = courseRepository.searchCoursesByKeyword(keyword);
-    // return courses.stream()
-    //     .map(course -> modelMapper.map(course, CourseDTO.class))
-    //     .collect(Collectors.toList());
-    // }
+
 
     
     public List<CourseDTO> searchCourses(String keyword, Boolean free, String difficulty, Double minRating, String orderBy) {

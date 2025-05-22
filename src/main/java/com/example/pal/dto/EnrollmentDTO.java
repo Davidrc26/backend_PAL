@@ -11,4 +11,5 @@ public class EnrollmentDTO {
     UserDTO user;
     CourseDTO course;
     LocalDateTime enrollment_date;
+    String state;
 }

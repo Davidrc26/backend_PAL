@@ -23,7 +23,7 @@ public class EnrollmentController {
     }
 
     @GetMapping("/my-courses/{userId}")
-    public ResponseEntity<List<EnrollmentDTO>> getEnrollmentsByUser(@PathVariable Long userId) {
+    public ResponseEntity<List<EnrollmentDTO>> getEnrollmentsByUser(@PathVariable("userId") Long userId) {
         List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByUser(userId);
         return ResponseEntity.ok(enrollments);
     }

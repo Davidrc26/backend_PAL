@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
 
 @Service
 public class PaymentService {
@@ -39,6 +40,10 @@ public class PaymentService {
         Course course = courseRepository.findById(dto.getCourse())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid course id"));
 
+        Optional<Payment> existingPayment = paymentRepository.findByCourseAndUserId(course.getId(), user.getId());
+        if (existingPayment.isPresent()) {
+            return modelMapper.map(existingPayment, PaymentDTO.class);
+        }
         if(course.getPrice() != dto.getAmount()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid amount");
         }
